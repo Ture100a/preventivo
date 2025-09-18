@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Richiesta Preventivo — Studio Architettura</title>
+  <style>
+    :root{
+      --bg:#0b0c0f;
+      --card:#14161a;
+      --muted:#9aa3af;
+      --text:#f5f5f5;
+      --primary:#3b82f6;
+      --ok:#10b981;
+      --err:#ef4444;
+      --ring: 0 0 0 3px rgba(59,130,246,.25);
+      --radius:16px;
+    }
+    html,body{height:100%;}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1400px 800px at 80% -10%, #1a1f2b 0, transparent 60%),
+                  radial-gradient(1200px 700px at -10% 110%, #0f172a 0, transparent 65%),
+                  var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:980px; margin:40px auto; padding:24px;}
+    .header{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px;}
+    .brand{font-weight:700; letter-spacing:.3px; font-size:22px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); box-shadow:0 10px 30px rgba(0,0,0,.35);}
+    .grid{display:grid; gap:16px; grid-template-columns: 1fr;}
+    @media(min-width:720px){ .grid{grid-template-columns: 1fr 1fr;} }
+    .full{grid-column:1 / -1}
+    .section{padding:24px}
+    .section h2{margin:0 0 12px; font-size:18px; font-weight:700}
+    label{display:block; font-size:14px; margin:0 0 6px; color:var(--muted)}
+    input, select, textarea{
+      width:100%; background:#0f1115; color:var(--text); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:12px 14px; font-size:15px; outline:none; transition:.2s box-shadow, .2s border-color;
+    }
+    input:focus, select:focus, textarea:focus{ box-shadow: var(--ring); border-color: rgba(59,130,246,.6); }
+    textarea{min-height:120px; resize:vertical}
+    .muted{color:var(--muted); font-size:12px;}
+    .row{display:flex; align-items:center; gap:12px}
+    .actions{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+    button{
+      appearance:none; border:0; background:var(--primary); color:white; padding:12px 16px; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; transition: .2s transform, .2s opacity;
+    }
+    button[disabled]{opacity:.6; cursor:not-allowed}
+    button:hover{ transform: translateY(-1px) }
+    .btn-secondary{background:#1f2937}
+    .pill{display:inline-block; background:#0f1115; border:1px solid rgba(255,255,255,.08); padding:6px 10px; border-radius:999px; font-size:12px; color:var(--muted)}
+    .error{color:var(--err); font-size:13px; margin-top:6px; display:none}
+    .success{display:none; background:rgba(16,185,129,.15); border:1px solid rgba(16,185,129,.35); color:#dcfce7; padding:12px 14px; border-radius:12px; font-size:14px;}
+    .fail{display:none; background:rgba(239,68,68,.15); border:1px solid rgba(239,68,68,.35); color:#fee2e2; padding:12px 14px; border-radius:12px; font-size:14px;}
+    .req{color:#ef4444}
+    .hr{height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent); margin:16px 0}
+    .foot{color:var(--muted); font-size:12px; text-align:center; margin-top:18px}
+    .dropzone{border:1px dashed rgba(255,255,255,.18); background:#0f1115; border-radius:12px; padding:16px; text-align:center;}
+    .captcha{display:flex; align-items:center; gap:8px}
+    .hidden{position:absolute !important; left:-10000px !important; top:auto !important; width:1px !important; height:1px !important; overflow:hidden;}
+    a{color:#93c5fd}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="brand">Studio Architettura Salvatore Centorbi</div>
+      <span class="pill">Richiesta preventivo</span>
+    </div>
+
+    <form id="quoteForm" class="card" novalidate>
+      <!-- Anti-spam honeypot -->
+      <div aria-hidden="true" class="hidden">
+        <label>Lascia questo campo vuoto
+          <input type="text" name="website" tabindex="-1" autocomplete="off" />
+        </label>
+      </div>
+
+      <div class="section">
+        <h2>Dati di contatto</h2>
+        <div class="grid">
+          <div>
+            <label for="nome">Nome <span class="req" aria-hidden="true">*</span></label>
+            <input id="nome" name="nome" required autocomplete="given-name" />
+            <div class="error" data-error-for="nome">Inserisci il nome.</div>
+          </div>
+          <div>
+            <label for="cognome">Cognome <span class="req" aria-hidden="true">*</span></label>
+            <input id="cognome" name="cognome" required autocomplete="family-name" />
+            <div class="error" data-error-for="cognome">Inserisci il cognome.</div>
+          </div>
+          <div>
+            <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
+            <input id="email" name="email" type="email" required inputmode="email" autocomplete="email" />
+            <div class="error" data-error-for="email">Inserisci un'email valida.</div>
+          </div>
+          <div>
+            <label for="telefono">Telefono</label>
+            <input id="telefono" name="telefono" type="tel" inputmode="tel" pattern="^[0-9+()\s-]{6,}$" placeholder="es. +39 333 1234567" />
+            <div class="error" data-error-for="telefono">Inserisci un numero valido.</div>
+          </div>
+          <div>
+            <label for="comune">Comune / Località</label>
+            <input id="comune" name="comune" autocomplete="address-level2" />
+          </div>
+          <div>
+            <label for="preferenza">Preferenza di contatto</label>
+            <select id="preferenza" name="preferenza">
+              <option value="email" selected>Email</option>
+              <option value="telefono">Telefono</option>
+              <option value="whatsapp">WhatsApp</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="section">
+        <h2>Informazioni sul servizio</h2>
+        <div class="grid">
+          <div>
+            <label for="servizio">Tipo di servizio <span class="req">*</span></label>
+            <select id="servizio" name="servizio" required>
+              <option value="" disabled selected>Seleziona…</option>
+              <option>Progettazione architettonica</option>
+              <option>Ristrutturazione</option>
+              <option>Interior design</option>
+              <option>Direzione lavori / Sicurezza</option>
+              <option>Relazione Legge 10</option>
+              <option>APE (Attestato di Prestazione Energetica)</option>
+              <option>Pratiche catastali / DOCFA</option>
+              <option>SCIA / CILA / Permesso di costruire</option>
+              <option>SUAP</option>
+              <option>Modellazione 3D e Rendering</option>
+              <option>Altro</option>
+            </select>
+            <div class="error" data-error-for="servizio">Seleziona un servizio.</div>
+          </div>
+          <div>
+            <label for="tipologia">Tipologia immobile</label>
+            <select id="tipologia" name="tipologia">
+              <option>Residenziale</option>
+              <option>Commerciale</option>
+              <option>Ricettivo</option>
+              <option>Industriale</option>
+              <option>Altro</option>
+            </select>
+          </div>
+          <div>
+            <label for="superficie">Superficie (mq)</label>
+            <input id="superficie" name="superficie" type="number" min="0" step="1" placeholder="es. 120" />
+          </div>
+          <div>
+            <label for="budget">Budget indicativo (€)</label>
+            <input id="budget" name="budget" type="number" min="0" step="500" placeholder="es. 20000" />
+          </div>
+          <div>
+            <label for="tempistiche">Tempistiche desiderate</label>
+            <select id="tempistiche" name="tempistiche">
+              <option>Appena possibile</option>
+              <option>Entro 30 giorni</option>
+              <option>1–3 mesi</option>
+              <option>3–6 mesi</option>
+              <option>Da definire</option>
+            </select>
+          </div>
+          <div>
+            <label for="indirizzoCantiere">Indirizzo cantiere (opzionale)</label>
+            <input id="indirizzoCantiere" name="indirizzo_cantiere" autocomplete="address-line1" />
+          </div>
+          <div class="full">
+            <label for="descrizione">Descrizione / Esigenze <span class="req">*</span></label>
+            <textarea id="descrizione" name="descrizione" required placeholder="Raccontaci il progetto, lo stato dell'immobile, eventuali vincoli, esigenze e obiettivi…"></textarea>
+            <div class="error" data-error-for="descrizione">Aggiungi una breve descrizione.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="section">
+        <h2>Allegati</h2>
+        <div class="grid">
+          <div class="full">
+            <label for="allegati">Planimetrie, foto o documenti (PDF/JPG/PNG, max 10MB ciascuno)</label>
+            <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-describedby="dzHelp">Trascina qui i file o clicca per selezionarli</div>
+            <input id="allegati" name="allegati" type="file" accept=".pdf,.jpg,.jpeg,.png" multiple class="hidden" />
+            <div id="dzHelp" class="muted">Suggerimento: allega planimetrie quotate o foto degli ambienti per un preventivo più accurato.</div>
+            <div id="fileList" class="muted" style="margin-top:8px"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="section">
+        <h2>Privacy</h2>
+        <div class="grid">
+          <div class="full">
+            <label class="row" for="consenso">
+              <input id="consenso" name="consenso" type="checkbox" required />
+              <span>Ho letto e accetto l'<a href="/privacy" target="_blank" rel="noopener">informativa privacy</a> e acconsento al trattamento dei dati per rispondere alla mia richiesta. <span class="req">*</span></span>
+            </label>
+            <div class="error" data-error-for="consenso">Devi accettare l'informativa privacy.</div>
+          </div>
+          <div class="full">
+            <label class="row" for="newsletter">
+              <input id="newsletter" name="newsletter" type="checkbox" />
+              <span>Voglio ricevere aggiornamenti su progetti, articoli e servizi (facoltativo)</span>
+            </label>
+          </div>
+          <div class="full captcha">
+            <input type="checkbox" id="antispam" name="antispam" />
+            <label for="antispam" class="muted">Confermo di essere una persona (anti-spam leggero)</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="section">
+        <div class="actions">
+          <button id="submitBtn" type="submit">Invia richiesta</button>
+          <button type="reset" class="btn-secondary">Pulisci</button>
+          <span class="muted">Tempo di compilazione ~2 minuti</span>
+        </div>
+        <p id="success" class="success">Grazie! La tua richiesta è stata inviata. Riceverai una risposta entro 1–2 giorni lavorativi.</p>
+        <p id="fail" class="fail">Si è verificato un problema con l'invio. Riprova più tardi o contattaci via email.</p>
+      </div>
+    </form>
+
+    <div class="foot">© <span id="year"></span> Studio Architettura Salvatore Centorbi — P.IVA / Contatti in footer</div>
+  </div>
+
+  <script>
+    // Utilità
+    const $ = (sel, ctx=document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+
+    // Aggiorna anno footer
+    $('#year').textContent = new Date().getFullYear();
+
+    // Dropzone
+    const dz = $('#dropzone');
+    const fi = $('#allegati');
+    const fl = $('#fileList');
+    function renderFiles(){
+      if(!fi.files || fi.files.length===0){ fl.textContent = ''; return; }
+      const items = [...fi.files].map(f=>`• ${f.name} (${(f.size/1024/1024).toFixed(2)} MB)`).join('\n');
+      fl.textContent = items;
+    }
+    dz.addEventListener('click', ()=> fi.click());
+    dz.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); fi.click(); }});
+    dz.addEventListener('dragover', e=>{ e.preventDefault(); dz.style.borderColor = 'rgba(59,130,246,.8)'; });
+    dz.addEventListener('dragleave', ()=> dz.style.borderColor = 'rgba(255,255,255,.18)');
+    dz.addEventListener('drop', e=>{ e.preventDefault(); dz.style.borderColor = 'rgba(255,255,255,.18)'; fi.files = e.dataTransfer.files; renderFiles(); });
+    fi.addEventListener('change', renderFiles);
+
+    // Validazione semplice
+    function showError(name, show){
+      const el = document.querySelector(`.error[data-error-for="${name}"]`);
+      if(!el) return;
+      el.style.display = show ? 'block' : 'none';
+    }
+    function validate(form){
+      let ok = true;
+      const required = ['nome','cognome','email','servizio','descrizione','consenso'];
+      required.forEach(name=>{
+        const field = form.elements[name];
+        const valid = (field.type==='checkbox') ? field.checked : !!field.value;
+        showError(name, !valid);
+        ok = ok && valid;
+      });
+      const tel = form.elements['telefono'];
+      if(tel && tel.value){
+        const re = new RegExp(tel.getAttribute('pattern'));
+        const good = re.test(tel.value);
+        showError('telefono', !good);
+        ok = ok && good;
+      }
+      if(form.elements['email']){
+        const email = form.elements['email'].value;
+        const good = /.+@.+\..+/.test(email);
+        showError('email', !good);
+        ok = ok && good;
+      }
+      // peso file max 10MB ciascuno
+      if(fi.files && fi.files.length){
+        for(const f of fi.files){ if(f.size > 10*1024*1024){ alert(`Il file ${f.name} supera i 10MB.`); ok = false; break; } }
+      }
+      // semplice anti-bot
+      const hp = form.elements['website'];
+      if(hp && hp.value){ ok=false; }
+      return ok;
+    }
+
+    // INVIO: Formspree (facile, senza backend). Sostituisci con il tuo endpoint.
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/XYZ12345"; // TODO: sostituisci con il tuo endpoint
+
+    const form = $('#quoteForm');
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      $('#success').style.display='none';
+      $('#fail').style.display='none';
+
+      if(!validate(form)) return;
+
+      // Costruisci FormData
+      const fd = new FormData(form);
+      fd.append('origine', window.location.href);
+      fd.append('timestamp', new Date().toISOString());
+
+      const btn = $('#submitBtn');
+      const prev = btn.textContent; btn.textContent = 'Invio in corso…'; btn.disabled = true;
+      try{
+        const res = await fetch(FORMSPREE_ENDPOINT, { method:'POST', body: fd, headers: { 'Accept':'application/json' } });
+        if(res.ok){
+          $('#success').style.display='block';
+          form.reset();
+          renderFiles();
+        } else {
+          $('#fail').style.display='block';
+        }
+      }catch(err){
+        console.error(err);
+        $('#fail').style.display='block';
+      } finally {
+        btn.textContent = prev; btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
